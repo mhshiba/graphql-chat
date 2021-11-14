@@ -30,7 +30,7 @@ const wsLink = new WebSocketLink({
 function isSubscription(operation) {
   const definition = getMainDefinition(operation.query);
   return definition.kind === 'OperationDefinition'
-    && definition.operation === 'Subscription';
+    && definition.operation === 'subscription';
 }
 
 const client = new ApolloClient({

@@ -24,14 +24,14 @@ const Mutation = {
     requireAuth(userId);
     const messageId = db.messages.create({from: userId, text: input.text});
     const message = db.messages.get(messageId);
-    pubSub.publish('MESSAGE_ADDED', {messageAdded: message});
+    pubSub.publish(MESSAGE_ADDED, { messageAdded: message });
     return message;
   }
 }
 
 const Subscription = {
   messageAdded: {
-    subscribe: () => pubSub.asyncIterator('MESSAGE_ADDED'),
+    subscribe: () => pubSub.asyncIterator(MESSAGE_ADDED),
   }
 }
 
