@@ -1,43 +1,35 @@
-import React, { Component } from 'react';
-import { addMessage, getMessages, onMessageAdded } from './graphql/queries';
+import { useQuery, useMutation, useSubscription } from '@apollo/client';
+import React, { useState } from 'react';
+import { messagesQuery, addMessageMutation, messageAddedSubscription } from './graphql/queries';
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
-class Chat extends Component {
-  state = {messages: []};
-  subscription = null;
-
-  async componentDidMount() {
-    const messages = await getMessages();
-    this.setState({messages});
-    this.subscription = onMessageAdded((message) => {
-      this.setState({messages: this.state.messages.concat(message)});
-    })
-  }
-
-  componentWillUnmount() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+const Chat = ({user}) => {
+  // Tem mais atributos do useQuery, mas esses são os mais usados
+  // Poderia/deveria usar o loading e error para tratamento diferenciados
+  // enquanto os dados ainda não estão prontos
+  const { loading, error, data } = useQuery(messagesQuery);
+  const { data2 } = useSubscription(messageAddedSubscription, {
+    onSubscriptionData: ({subscriptionData}) => {
+      console.log('onSubscriptionData', subscriptionData.data.messageAdded);
     }
+  });
+  const [ addMessage, result ] = useMutation(addMessageMutation);
+  const [ messages, setMessages ] = useState([]);
+
+  const handleSend = async (text) => {
+    await addMessage({variables: {input: {text}}});
   }
 
-  async handleSend(text) {
-    await addMessage(text);
-  }
-
-  render() {
-    const {user} = this.props;
-    const {messages} = this.state;
-    return (
-      <section className="section">
-        <div className="container">
-          <h1 className="title">Chatting as {user}</h1>
-          <MessageList user={user} messages={messages} />
-          <MessageInput onSend={this.handleSend.bind(this)} />
-        </div>
-      </section>
-    );
-  }
+  return (
+    <section className="section">
+      <div className="container">
+        <h1 className="title">Chatting as {user}</h1>
+        <MessageList user={user} messages={messages} />
+        <MessageInput onSend={handleSend} />
+      </div>
+    </section>
+  );
 }
 
 export default Chat;
