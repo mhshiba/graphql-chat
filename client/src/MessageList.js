@@ -23,9 +23,6 @@ class MessageList extends Component {
   }
 
   renderMessage(message) {
-    // if (!message) {
-    //   return null;
-    // }
     const {user} = this.props;
     let tag = 'tag';
     if (message.from === user) {

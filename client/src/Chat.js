@@ -1,38 +1,17 @@
-import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import React from 'react';
-import { messagesQuery, addMessageMutation, messageAddedSubscription } from './graphql/queries';
+import {useChatMessages} from './hooks';
 import MessageInput from './MessageInput';
 import MessageList from './MessageList';
 
 const Chat = ({user}) => {
-  // Tem mais atributos do useQuery, mas esses são os mais usados
-  // Poderia/deveria usar o loading e error para tratamento diferenciados
-  // enquanto os dados ainda não estão prontos
-  const { data } = useQuery(messagesQuery);
-  console.log('data', data);
-  const messages = data ? data.messages: [];
-  useSubscription(messageAddedSubscription, {
-    onSubscriptionData: ({client, subscriptionData}) => {
-      // Atualiza o cache, e então o componente é reenderizado
-      // E com o cache atualizado, o `useQuery(messagesQuery)` vai
-      // usar esses dados recém atualizados
-      client.writeData({data: {
-        messages: messages.concat(subscriptionData.data.messageAdded)
-      }})
-    }
-  });
-  const [ addMessage, result ] = useMutation(addMessageMutation);
-
-  const handleSend = async (text) => {
-    await addMessage({variables: {input: {text}}});
-  }
+  const { messages, addMessage } = useChatMessages();
 
   return (
     <section className="section">
       <div className="container">
         <h1 className="title">Chatting as {user}</h1>
         <MessageList user={user} messages={messages} />
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={addMessage} />
       </div>
     </section>
   );

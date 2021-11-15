@@ -31,6 +31,9 @@ export const messageAddedSubscription = gql`
   }
 `;
 
+// Essas funções foram substituídas pelo uso de hooks (useQuery, useMutation e useSubscription)
+// Então não faço mais chamadas diretas usando o Apollo Client
+// (poderia até ser deletadas, mas estou deixando aqui para referência)
 export async function addMessage(text) {
   const {data} = await client.mutate({
     mutation: addMessageMutation,
