@@ -8,10 +8,15 @@ const Chat = ({user}) => {
   // Tem mais atributos do useQuery, mas esses são os mais usados
   // Poderia/deveria usar o loading e error para tratamento diferenciados
   // enquanto os dados ainda não estão prontos
-  const { loading, error, data } = useQuery(messagesQuery);
+  useQuery(messagesQuery, {
+    onCompleted: ({messages}) => {
+      setMessages(messages);
+    },
+  });
   const { data2 } = useSubscription(messageAddedSubscription, {
     onSubscriptionData: ({subscriptionData}) => {
       console.log('onSubscriptionData', subscriptionData.data.messageAdded);
+      setMessages(messages.concat(subscriptionData.data.messageAdded));
     }
   });
   const [ addMessage, result ] = useMutation(addMessageMutation);
