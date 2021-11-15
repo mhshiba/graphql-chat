@@ -13,9 +13,12 @@ export function useChatMessages() {
       // Atualiza o cache, e então o componente é reenderizado
       // E com o cache atualizado, o `useQuery(messagesQuery)` vai
       // usar esses dados recém atualizados
-      client.writeData({data: {
-        messages: messages.concat(subscriptionData.data.messageAdded)
-      }})
+      client.writeQuery({
+        query: messagesQuery,
+        data: {
+          messages: messages.concat(subscriptionData.data.messageAdded)
+        }
+      })
     }
   });
   const [ addMessage ] = useMutation(addMessageMutation);
